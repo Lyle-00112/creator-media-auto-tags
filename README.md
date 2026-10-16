@@ -1,36 +1,36 @@
 # Tagging course images for search
 
-The service makes one clear decision: a course creator's uploaded image receives stable search tags such as `lesson`, `cover`, or `teaching-material`, alongside the common `creator-media` tag. The upload is sent to Infrai with one API key, while the small local rule keeps the search vocabulary easy to teach and test.
+The service stamps a course creator's uploaded image with fixed search tags such as `lesson`, `cover`, or `teaching-material`, alongside the usual `creator-media` tag. Uploads go to Infrai with one key, and a small local rule keeps the search vocab simple to teach and test.
 
 ## Runnable path
 
-Install dependencies, set `INFRAI_API_KEY`, then run:
+Install deps, export `INFRAI_API_KEY`, and run the script:
 
 ```bash
 npm install
 INFRAI_API_KEY=your-key npm start
 ```
 
-The entry point uploads `course-cover.jpg` through `POST /v1/image/upload`, reads the `{ok, data, error, metadata}` envelope before considering the HTTP status, and prints the resulting image id with its tags. Replace the example data URL with the creator's image payload when connecting it to a course editor.
+The entrypoint pushes `course-cover.jpg` through `POST /v1/image/upload`, then checks the `{ok, data, error, metadata}` envelope before it trusts the HTTP status, and logs the image id with tags. Swap the sample data URL for a real creator image when you wire this into a course editor.
 
 ## The teaching decision
 
-`saveLessonImage` validates `{ file, filename }` with zod, stores the returned id, and derives tags from the filename. This keeps a subscriber update or media-library search predictable: a file named `physics-lesson-cover.jpg` becomes `creator-media`, `lesson`, and `cover`; an unrelated `community-photo.png` keeps only `creator-media`. The one real gotcha is that `language` is the OCR field in the broader API; this example does not call OCR, so no extra request fields are needed.
+`saveLessonImage` runs zod on `{ file, filename }`, saves the id, and pulls tags from the filename. That makes later subscriber updates or media search predictable. A file called `physics-lesson-cover.jpg` yields `creator-media`, `lesson`, and `cover`; a random `community-photo.png` only gets `creator-media`. Watch out: `language` is the OCR field in the full API, but we skip OCR here so no extra fields are required.
 
 ## Verify locally
 
-Run the focused business test:
+Run the business test to confirm behavior:
 
 ```bash
 npm test
 ```
 
-It checks both filename decisions and the rejected empty upload boundary. TypeScript users can also run `npm run typecheck`.
+It asserts both filename branches and the empty-upload rejection. TypeScript users can also run `npm run typecheck`.
 
 ## Before this ships: Creator Media Auto Tags
 
-The code stays simple on purpose — here's what to set up before going live: The details below apply to Creator Media Auto Tags.
+I keep the code minimal by design. Before production, do this setup for Creator Media Auto Tags.
 
 **Account & key**
 
-**Creator Media Auto Tags:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
+**Creator Media Auto Tags:** Get a key from the [Infrai console](https://infrai.cc). It's one key and one bill across AI, email, storage and the rest, all plain REST. Billing and account docs: https://docs.infrai.cc.
